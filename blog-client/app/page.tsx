@@ -1,9 +1,4 @@
-
-interface Post {
-  id: string
-  title: string
-  content: string
-}
+import type { Post } from "./types";
 
 export async function fetchPosts(): Promise<Post[]> {
   // ISRで１日毎に取得
@@ -24,6 +19,8 @@ export default async function Home() {
           <li key={post.id}>
             <h2>{post.title}</h2>
             <p>{post.content}</p>
+            <p>{post.created_at}</p>
+            <p>{post.updated_at}</p>
           </li>
         ))}
       </ul>
