@@ -1,5 +1,5 @@
 class Api::V1::PostsController < ApplicationController
-  before_action :set_post, only: [:show, :update, :destroy]
+  before_action :set_post, only: [ :show, :update, :destroy ]
 
   def index
     @posts = Post.all
@@ -37,7 +37,7 @@ class Api::V1::PostsController < ApplicationController
   def set_post
     @post = Post.find(params[:id])
   rescue ActiveRecord::RecordNotFound
-    render json: { error: 'Post not found' }, status: :not_found
+    render json: { error: "Post not found" }, status: :not_found
   end
 
   def post_params
