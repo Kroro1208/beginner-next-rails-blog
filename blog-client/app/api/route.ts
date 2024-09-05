@@ -15,3 +15,12 @@ export async function fetchPost(id: string): Promise<Post> {
     }
     return res.json();
   }
+
+  export async function deletePost(id: string) {
+    const res = await fetch(`http://localhost:3001/api/v1/posts/${id}`, {
+        method: "DELETE",
+    });
+    if(!res.ok) {
+        throw new Error("ブログの削除に失敗しました");
+    }
+  }
