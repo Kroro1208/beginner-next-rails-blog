@@ -1,5 +1,13 @@
 import type { Post } from "../types";
 
+export async function fetchPosts(): Promise<Post[]> {
+  const res = await fetch("http://localhost:3001/api/v1/posts", {cache: "no-store" });
+  if(!res.ok) {
+    throw new Error('取得できませんでした');
+  }
+  return res.json();
+}
+
 export async function fetchPost(id: string): Promise<Post> {
     const res = await fetch(`http://localhost:3001/api/v1/posts/${id}`, { next: { revalidate: 60 } });
     if (!res.ok) {

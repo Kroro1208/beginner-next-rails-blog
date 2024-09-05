@@ -1,13 +1,5 @@
 import Link from "next/link";
-import type { Post } from "./types";
-
-export async function fetchPosts(): Promise<Post[]> {
-  const res = await fetch("http://localhost:3001/api/v1/posts", {cache: "no-store" });
-  if(!res.ok) {
-    throw new Error('取得できませんでした');
-  }
-  return res.json();
-}
+import { fetchPosts } from "./api/route";
 
 export default async function Home() {
   const posts = await fetchPosts();
@@ -28,19 +20,18 @@ export default async function Home() {
                   <h2 className="text-2xl font-semibold text-gray-800 mb-2">{post.title}</h2>
                 </Link>
                 <p className="text-gray-600 mb-4 line-clamp-3">{post.content}</p>
-                <div className="flex justify-between items-center mb-4">
-                    <button type="button" className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors duration-300">
-                      <Link href={`/blog/edit/${post.id}`}>
-                          編集
-                      </Link>
-                    </button>
-                  <button type="button" className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition-colors duration-300">
-                    削除
-                  </button>
+                <div className="flex justify-end items-center mb-4">
                 </div>
-                <div className="text-sm text-gray-500">
-                  <p>作成日: {new Date(post.created_at).toLocaleDateString()}</p>
-                  <p>更新日: {new Date(post.updated_at).toLocaleDateString()}</p>
+                <div className="flex justify-between text-sm text-gray-500">
+                  <div>
+                    <p>作成日: {new Date(post.created_at).toLocaleDateString()}</p>
+                    <p>更新日: {new Date(post.updated_at).toLocaleDateString()}</p>
+                  </div>
+                  <button type="button" className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors duration-300">
+                    <Link href={`/blog/edit/${post.id}`}>
+                        編集
+                    </Link>
+                  </button>
                 </div>
               </div>
             </div>

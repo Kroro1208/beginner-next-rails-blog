@@ -1,5 +1,6 @@
 "use client";
 import axios from 'axios';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react'
 
@@ -25,9 +26,18 @@ const CreatePostPage = () => {
   return (
     <div className="container mx-auto py-10">
       <div className="max-w-2xl mx-auto bg-white shadow-md rounded-lg overflow-hidden">
-        <div className="px-6 py-4">
-          <h2 className="text-2xl font-bold mb-2">新規ブログ投稿</h2>
-          <p className="text-gray-600 mb-4">新しいブログ記事を作成します。</p>
+        <div className="px-6 py-4 flex justify-between">
+          <div>
+            <h2 className="text-2xl font-bold mb-2">新規ブログ投稿</h2>
+            <p className="text-gray-600 mb-4">新しいブログ記事を作成します。</p>
+          </div>
+          <div className="flex justify-between items-center p-5">
+            <Link
+              href="/"
+              className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
+              戻る
+            </Link>
+          </div>
         </div>
         <form onSubmit={handleSubmit} className="px-6 py-4">
           <div className="mb-4">
