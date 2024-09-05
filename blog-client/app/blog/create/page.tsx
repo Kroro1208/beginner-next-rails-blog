@@ -7,19 +7,35 @@ import { useState } from 'react'
 const CreatePostPage = () => {
   const [title, setTitle] = useState('')
   const [content, setContent] = useState('')
+  const [image, setImage] = useState<File | null>(null)
   const router = useRouter()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    const formData = new FormData()
+    formData.append('post[title]', title)
+    formData.append('post[content]', content)
+    if(image) {
+      formData.append('post[image]', image)
+
+    }
+
     // API叩く
     try {
-        await axios.post("http://localhost:3001/api/v1/posts", {
-            title: title,
-            content: content
+        await axios.post("http://localhost:3001/api/v1/posts", formData, {
+            headers: {
+              "Content-Type": "multipart/form-data"
+            }
         });
         router.push("/");
     } catch (error) {
       alert("エラー: 投稿に失敗しました。もう一度お試しください。")
+    }
+  }
+  
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if(e.target.files?.[0]) {
+      setImage(e.target.files[0]);
     }
   }
 
@@ -65,6 +81,18 @@ const CreatePostPage = () => {
               onChange={(e) => setContent(e.target.value)}
               required
               className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline h-48"
+            />
+          </div>
+          <div className="mb-6">
+            <label htmlFor="image" className="block text-gray-700 text-sm font-bold mb-2">
+              画像
+            </label>
+            <input
+              id="image"
+              type="file"
+              accept="image/*"
+              onChange={handleImageChange}
+              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
             />
           </div>
           <div className="flex items-center justify-between">
