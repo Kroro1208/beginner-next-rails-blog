@@ -1,5 +1,6 @@
 "use client";
 import axios from 'axios';
+import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react'
@@ -8,6 +9,9 @@ const EditPostPage = ({ params }: { params: { id: string } }) => {
   const [title, setTitle] = useState('')
   const [content, setContent] = useState('')
   const [isLoading, setIsLoading] = useState(true)
+  const [image, setImage] = useState<File | null>(null);
+  const [imageUrl, setImageUrl] = useState<string | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
   const router = useRouter()
 
   useEffect(() => {
@@ -16,10 +20,11 @@ const EditPostPage = ({ params }: { params: { id: string } }) => {
         const response = await axios.get(`http://localhost:3001/api/v1/posts/${params.id}`);
         setTitle(response.data.title);
         setContent(response.data.content);
+        setImageUrl(response.data.image_url);
         setIsLoading(false);
       } catch (error) {
         alert("エラー: 投稿の取得に失敗しました。");
-        router.push("/");
+        router.push(`/blog/${params.id}`);
       }
     };
 
@@ -28,15 +33,35 @@ const EditPostPage = ({ params }: { params: { id: string } }) => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    const formData = new FormData();
+    formData.append('post[title]', title);
+    formData.append('post[content]', content);
+    if (image) {
+      formData.append('post[image]', image);
+    }
+
     try {
-        await axios.put(`http://localhost:3001/api/v1/posts/${params.id}`, {
-            title: title,
-            content: content
+        await axios.put(`http://localhost:3001/api/v1/posts/${params.id}`, formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          }
         });
-        router.push("/");
-        router.refresh();
-    } catch (error) {
+        router.refresh(); // この行を追加
+        window.location.href = `/blog/${params.id}`;
+      } catch (error) {
       alert("エラー: 投稿の更新に失敗しました。もう一度お試しください。")
+    }
+  }
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if(e.target.files?.[0]) {
+      const file = e.target.files[0];
+      setImage(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result as string);
+      }
+      reader.readAsDataURL(file);
     }
   }
 
@@ -105,6 +130,29 @@ const EditPostPage = ({ params }: { params: { id: string } }) => {
               required
               className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline h-48"
             />
+          </div>
+          <div className="mb-6">
+            <label htmlFor="image" className="block text-gray-700 text-sm font-bold mb-2">
+              画像
+            </label>
+            <input
+              id="image"
+              type="file"
+              accept="image/*"
+              onChange={handleImageChange}
+              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            />
+            {(imagePreview || imageUrl) && (
+              <div className="mt-4">
+                <Image
+                  src={imagePreview || imageUrl || ''}
+                  alt="Post image"
+                  width={300}
+                  height={200}
+                  className="object-cover rounded"
+                />
+              </div>
+            )}
           </div>
           <div className="flex items-center justify-between">
             <button

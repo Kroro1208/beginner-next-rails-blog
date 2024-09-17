@@ -28,6 +28,7 @@ const CreatePostPage = () => {
             }
         });
         router.push("/");
+        router.refresh();
     } catch (error) {
       alert("エラー: 投稿に失敗しました。もう一度お試しください。")
     }

@@ -2,12 +2,12 @@ class Api::V1::PostsController < ApplicationController
   before_action :set_post, only: [ :show, :update, :destroy ]
 
   def index
-    @posts = Post.all
+    @posts = Post.with_attached_image.all
     render json: @posts
   end
 
   def show
-    render json: @post
+    render json: @post, serializer: Api::V1::PostSerializer
   end
 
   def create

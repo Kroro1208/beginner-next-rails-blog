@@ -1,8 +1,11 @@
 import Link from "next/link";
 import { fetchPosts } from "./api/route";
+import Image from "next/image";
+import type { Post } from "./types";
 
 export default async function Home() {
-  const posts = await fetchPosts();
+  const posts: Post[] = await fetchPosts();
+  console.log(posts);
   return (
     <div className="bg-gray-100 min-h-screen p-8">
       <div className="max-w-4xl mx-auto">
@@ -15,6 +18,17 @@ export default async function Home() {
         <div className="grid gap-8 md:grid-cols-2">
           {posts.map((post) => (
             <div key={post.id} className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
+              {post.image_url && (
+                <div className="h-48 overflow-hidden">
+                  <Image
+                    src={post.image_url} 
+                    alt={post.title} 
+                    width={400} 
+                    height={200} 
+                    className="object-cover w-full h-full"
+                  />
+                </div>
+              )}
               <div className="p-6">
                 <Link href={`/blog/${post.id}`}>
                   <h2 className="text-2xl font-semibold text-gray-800 mb-2">{post.title}</h2>
