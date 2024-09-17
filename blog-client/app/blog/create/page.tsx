@@ -1,5 +1,6 @@
 "use client";
 import axios from 'axios';
+import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react'
@@ -7,8 +8,9 @@ import { useState } from 'react'
 const CreatePostPage = () => {
   const [title, setTitle] = useState('')
   const [content, setContent] = useState('')
-  const [image, setImage] = useState<File | null>(null)
-  const router = useRouter()
+  const [image, setImage] = useState<File | null>(null);
+  const [imageUrl, setImageUrl] = useState<string | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);  const router = useRouter()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -36,7 +38,13 @@ const CreatePostPage = () => {
   
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if(e.target.files?.[0]) {
-      setImage(e.target.files[0]);
+      const file = e.target.files[0];
+      setImage(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result as string);
+      }
+      reader.readAsDataURL(file);
     }
   }
 
@@ -95,6 +103,17 @@ const CreatePostPage = () => {
               onChange={handleImageChange}
               className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
             />
+            {(imagePreview || imageUrl) && (
+              <div className="mt-4">
+                <Image
+                  src={imagePreview || imageUrl || ''}
+                  alt="Post image"
+                  width={300}
+                  height={200}
+                  className="object-cover rounded"
+                />
+              </div>
+            )}
           </div>
           <div className="flex items-center justify-between">
             <button
