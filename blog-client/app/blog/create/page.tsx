@@ -24,11 +24,14 @@ const CreatePostPage = () => {
 
     // API叩く
     try {
-        await axios.post("http://localhost:3001/api/v1/posts", formData, {
+        const response =await axios.post("http://localhost:3001/api/v1/posts", formData, {
             headers: {
               "Content-Type": "multipart/form-data"
             }
         });
+        if(response.data.image_url) {
+          setImageUrl(response.data.image_url);
+        }
         router.push("/");
         router.refresh();
     } catch (error) {
